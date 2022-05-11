@@ -1,4 +1,4 @@
-package com.viktorsuetnov.caloriecounting.security;
+package com.viktorsuetnov.caloriecounting.security.jwt;
 
 import com.viktorsuetnov.caloriecounting.model.User;
 import io.jsonwebtoken.*;
