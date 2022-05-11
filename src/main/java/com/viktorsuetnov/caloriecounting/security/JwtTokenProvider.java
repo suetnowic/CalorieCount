@@ -1,8 +1,7 @@
 package com.viktorsuetnov.caloriecounting.security;
 
 import com.viktorsuetnov.caloriecounting.model.User;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -36,6 +35,26 @@ public class JwtTokenProvider {
                 .setExpiration(expDate)
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
                 .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(JWT_SECRET)
+                    .parseClaimsJws(token);
+            return true;
+        } catch (SignatureException signatureException) {
+            LOG.error("Invalid JWT signature: {}", signatureException.getMessage());
+        } catch (MalformedJwtException malformedJwtException) {
+            LOG.error("Invalid JWT token {}", malformedJwtException.getMessage());
+        } catch (ExpiredJwtException expiredJwtException) {
+            LOG.error("JWT token is expired: {}", expiredJwtException.getMessage());
+        } catch (UnsupportedJwtException unsupportedJwtException) {
+            LOG.error("JWT token is unsupported: {}", unsupportedJwtException.getMessage());
+        } catch (IllegalArgumentException illegalArgumentException) {
+            LOG.error("JWT claims string is empty: {}", illegalArgumentException.getMessage());
+        }
+        return false;
     }
 
 }
