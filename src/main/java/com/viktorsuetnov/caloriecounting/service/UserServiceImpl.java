@@ -24,26 +24,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getUserByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with " + username + " not found"));
-        return build(user);
-    }
-
-    public User loadUserById(Long id) {
-        return userRepository.getUserById(id).orElse(null);
-    }
-
-    private static User build(User user) {
-        List<GrantedAuthority> authorities = user
-                .getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.name()))
-                .collect(Collectors.toList());
-        return new User(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
-    }
-
-    @Override
     public List<User> getAllUsers() {
         return null;
     }
