@@ -1,6 +1,5 @@
 package com.viktorsuetnov.caloriecounting.service;
 
-import com.viktorsuetnov.caloriecounting.model.Role;
 import com.viktorsuetnov.caloriecounting.model.User;
 import com.viktorsuetnov.caloriecounting.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

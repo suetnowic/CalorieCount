@@ -16,11 +16,8 @@ import java.time.LocalTime;
 @Table(name = "meals")
 public class Meal {
 
-    public static final int SEQUENCE_START = 100_000;
-
     @Id
-    @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1, initialValue = SEQUENCE_START)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
     @Column(name = "date_time", nullable = false)

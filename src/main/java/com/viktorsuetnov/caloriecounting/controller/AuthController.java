@@ -1,13 +1,16 @@
 package com.viktorsuetnov.caloriecounting.controller;
 
+import com.viktorsuetnov.caloriecounting.model.User;
 import com.viktorsuetnov.caloriecounting.payload.request.LoginRequest;
 import com.viktorsuetnov.caloriecounting.payload.request.SignupRequest;
 import com.viktorsuetnov.caloriecounting.payload.response.JwtTokenSuccessResponse;
 import com.viktorsuetnov.caloriecounting.payload.response.MessageResponse;
 import com.viktorsuetnov.caloriecounting.security.jwt.JwtTokenProvider;
+import com.viktorsuetnov.caloriecounting.service.UserDetailsServiceImpl;
 import com.viktorsuetnov.caloriecounting.service.UserService;
 import com.viktorsuetnov.caloriecounting.validations.ResponseErrorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -55,12 +58,19 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<Object> authenticateUser(@Valid @RequestBody LoginRequest request,
                                                    BindingResult bindingResult) {
-        final ResponseEntity<Object> errors = responseErrorValidator.mapValidationService(bindingResult);
+        ResponseEntity<Object> errors = responseErrorValidator.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtTokenSuccessResponse(true, jwt));
+
+        User user = userService.getUserByEmail(request.getUsername());
+
+        if (user.isEnabled()) {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.getUsername(), request.getPassword()
+            ));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication);
+            return ResponseEntity.ok(new JwtTokenSuccessResponse(true, jwt));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Account not activated");
     }
 }
