@@ -81,10 +81,25 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public boolean activateUser(String code) {
+        LOG.info("Activate user by " + code);
+        User user = userRepository.getUserByActivationCode(code);
+        if (user == null) {
+            LOG.info("User by activation code is not found " + code);
+            return false;
+        }
+        user.setActivationCode(null);
+        user.setActive(true);
+        LOG.info("User activated successfully");
+        userRepository.save(user);
+        return true;
+    }
+
     private void sendMessage(User user) {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format("Hello, %s! \n" +
-                    "Welcome to Calorie Counting application. Please visit the next link: http://%s/api/activate/%s",
+                            "Welcome to Calorie Counting application. Please visit the next link: http://%s/api/user/activate/%s",
                     user.getUsername(), hostname, user.getActivationCode());
             LOG.info("Send message to user with email: " + user.getEmail());
             mailSender.send(user.getEmail(), "Activation code", message);

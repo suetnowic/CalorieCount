@@ -3,6 +3,7 @@ package com.viktorsuetnov.caloriecounting.controller;
 import com.viktorsuetnov.caloriecounting.dto.UserDTO;
 import com.viktorsuetnov.caloriecounting.facade.UserFacade;
 import com.viktorsuetnov.caloriecounting.model.User;
+import com.viktorsuetnov.caloriecounting.payload.response.MessageResponse;
 import com.viktorsuetnov.caloriecounting.service.UserService;
 import com.viktorsuetnov.caloriecounting.validations.ResponseErrorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,5 +63,14 @@ public class UserController {
         User user = userService.updateProfile(userIn, principal);
         UserDTO userDTO = userFacade.userToUserDTO(user);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/activate/{code}")
+    public ResponseEntity<Object> activate(@PathVariable String code) {
+        boolean isActivated = userService.activateUser(code);
+        if (isActivated) {
+            return ResponseEntity.ok(new MessageResponse("User activated successfully"));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Activation code is not found");
     }
 }

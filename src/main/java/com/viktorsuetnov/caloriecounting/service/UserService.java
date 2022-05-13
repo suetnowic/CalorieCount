@@ -21,4 +21,6 @@ public interface UserService {
     User getUserById(Long id);
 
     User updateProfile(User user, Principal principal);
+
+    boolean activateUser(String code);
 }

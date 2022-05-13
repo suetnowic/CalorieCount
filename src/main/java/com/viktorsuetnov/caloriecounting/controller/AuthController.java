@@ -6,7 +6,6 @@ import com.viktorsuetnov.caloriecounting.payload.request.SignupRequest;
 import com.viktorsuetnov.caloriecounting.payload.response.JwtTokenSuccessResponse;
 import com.viktorsuetnov.caloriecounting.payload.response.MessageResponse;
 import com.viktorsuetnov.caloriecounting.security.jwt.JwtTokenProvider;
-import com.viktorsuetnov.caloriecounting.service.UserDetailsServiceImpl;
 import com.viktorsuetnov.caloriecounting.service.UserService;
 import com.viktorsuetnov.caloriecounting.validations.ResponseErrorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
