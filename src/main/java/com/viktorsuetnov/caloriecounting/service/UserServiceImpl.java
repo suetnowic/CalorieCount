@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
             String message = String.format("Hello, %s! \n" +
                     "Welcome to Calorie Counting application. Please visit the next link: http://%s/api/activate/%s",
                     user.getUsername(), hostname, user.getActivationCode());
+            LOG.info("Send message to user with email: " + user.getEmail());
             mailSender.send(user.getEmail(), "Activation code", message);
         }
     }
