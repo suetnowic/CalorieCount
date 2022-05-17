@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -48,52 +49,69 @@ public class UserServiceImpl implements UserService {
         try {
             LOG.info("Saving user with {}", userIn.getEmail());
             userRepository.save(user);
+            LOG.info("Send email message...");
             sendMessage(user);
             return user;
         } catch (Exception exception) {
             LOG.error("Error during registration {}", exception.getMessage());
-            throw new UserExistException("The user with " + userIn.getUsername() + "already exist");
+            throw new UserExistException("The user with username " + userIn.getUsername() + " already exist");
         }
     }
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.getUserByEmail(email);
+        return userRepository.getUserByEmail(email).orElseThrow(() ->
+                new UserNotFoundException("User with email " + email + " not found"));
     }
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        return userRepository.findAll();
     }
 
     @Override
     public User getCurrentUser(Principal principal) {
-        return null;
+        return getUserFromPrincipal(principal);
     }
 
     @Override
     public User getUserById(Long id) {
-        return null;
+        return userRepository.getUserById(id).orElse(null);
     }
 
     @Override
-    public User updateProfile(User user, Principal principal) {
-        return null;
+    public User updateProfile(User userIn, Principal principal) {
+        User user = getUserFromPrincipal(principal);
+        String currentUserEmail = user.getEmail();
+
+        String newEmail = userIn.getEmail();
+        String newPassword = userIn.getPassword();
+
+        final boolean isEmailUpdated = changeEmail(currentUserEmail, newEmail, user);
+        final boolean isPasswordUpdated = changePassword(newPassword, user);
+        if (isEmailUpdated || isPasswordUpdated) {
+            try {
+                LOG.info("Saving the updated user");
+                userRepository.save(user);
+            } catch (Exception exception) {
+                LOG.error("Error during update profile {}", exception.getMessage());
+            }
+        }
+        return userRepository.save(user);
     }
 
     @Override
     public boolean activateUser(String code) {
         LOG.info("Activate user by " + code);
-        User user = userRepository.getUserByActivationCode(code);
-        if (user == null) {
-            LOG.info("User by activation code is not found " + code);
-            return false;
+        User user = userRepository.getUserByActivationCode(code).orElse(null);
+        if (user != null) {
+            user.setActive(true);
+            user.setActivationCode(null);
+            LOG.info("User activated successfully");
+            userRepository.save(user);
+            return true;
         }
-        user.setActivationCode(null);
-        user.setActive(true);
-        LOG.info("User activated successfully");
-        userRepository.save(user);
-        return true;
+        return false;
     }
 
     private void sendMessage(User user) {
@@ -101,8 +119,33 @@ public class UserServiceImpl implements UserService {
             String message = String.format("Hello, %s! \n" +
                             "Welcome to Calorie Counting application. Please visit the next link: http://%s/api/user/activate/%s",
                     user.getUsername(), hostname, user.getActivationCode());
-            LOG.info("Send message to user with email: " + user.getEmail());
             mailSender.send(user.getEmail(), "Activation code", message);
         }
+    }
+
+    private boolean changeEmail(String currentUserEmail, String newEmail, User user) {
+        if ((!StringUtils.isEmpty(newEmail) && !newEmail.equals(currentUserEmail))
+                || (!StringUtils.isEmpty(currentUserEmail) && !currentUserEmail.equals(newEmail))) {
+            LOG.info("Update " + user.getUsername() + " email from " + currentUserEmail + " to " + newEmail);
+            user.setEmail(newEmail);
+            user.setActivationCode(UUID.randomUUID().toString());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean changePassword(String newPassword, User user) {
+        if (StringUtils.hasText(newPassword)) {
+            LOG.info("Update password... {}", user.getUsername());
+            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+            return true;
+        }
+        return false;
+    }
+
+    private User getUserFromPrincipal(Principal principal) {
+        String username = principal.getName();
+        return userRepository.getUserByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("Username with username " + username + " not found "));
     }
 }

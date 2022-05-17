@@ -20,7 +20,7 @@ public interface UserService {
 
     User getUserById(Long id);
 
-    User updateProfile(User user, Principal principal);
+    User updateProfile(User userIn, Principal principal);
 
     boolean activateUser(String code);
 }
