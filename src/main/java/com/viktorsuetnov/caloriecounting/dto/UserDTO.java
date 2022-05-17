@@ -1,9 +1,13 @@
 package com.viktorsuetnov.caloriecounting.dto;
 
+import javax.validation.constraints.NotEmpty;
+
 public class UserDTO {
 
     private Long id;
+    @NotEmpty
     private String username;
+    @NotEmpty
     private String email;
 
     public UserDTO() {
@@ -38,4 +42,5 @@ public class UserDTO {
     public void setEmail(String email) {
         this.email = email;
     }
+
 }

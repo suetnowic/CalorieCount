@@ -17,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.viktorsuetnov.caloriecounting.security.SecurityConstants.ACTIVATE_ACCOUNT_URL;
 import static com.viktorsuetnov.caloriecounting.security.SecurityConstants.SIGN_UP_URL;
 
 @Configuration
@@ -64,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(SIGN_UP_URL)
+                .antMatchers(SIGN_UP_URL, ACTIVATE_ACCOUNT_URL)
                 .permitAll()
                 .anyRequest()
                 .authenticated();

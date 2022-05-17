@@ -1,8 +1,8 @@
 CREATE TABLE users
 (
     id               BIGSERIAL               NOT NULL,
-    username         VARCHAR(100)            NOT NULL,
-    email            VARCHAR(100)            NOT NULL,
+    username         VARCHAR(100)            NOT NULL UNIQUE,
+    email            VARCHAR(100)            NOT NULL UNIQUE,
     password         VARCHAR(100)            NOT NULL,
     active           BOOLEAN                 NOT NULL,
     activation_code  VARCHAR(255),

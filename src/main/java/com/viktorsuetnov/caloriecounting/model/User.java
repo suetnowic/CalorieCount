@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.*;
@@ -23,7 +22,7 @@ public class User implements UserDetails {
 
     @NotBlank
     @Size(min = 5, max = 100)
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true, updatable = false)
     private String username;
 
     @NotBlank
@@ -32,7 +31,6 @@ public class User implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @NotBlank
     @Size(min = 8, max = 100)
     @Column(name = "password", nullable = false)
     private String password;
@@ -43,8 +41,7 @@ public class User implements UserDetails {
     @Column(name = "activation_code")
     private String activationCode;
 
-    @NotNull
-    @Column(name = "registered", nullable = false, updatable = false, columnDefinition = "timestamp default now()")
+    @Column(name = "registered", updatable = false, columnDefinition = "timestamp default now()")
     private LocalDate registered;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
