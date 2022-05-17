@@ -28,7 +28,7 @@ import javax.validation.Valid;
 import static com.viktorsuetnov.caloriecounting.security.SecurityConstants.TOKEN_PREFIX;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @PreAuthorize("permitAll()")
 public class AuthController {
 
@@ -46,8 +46,8 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> registerUser (@Valid @RequestBody SignupRequest request,
-                                                BindingResult bindingResult) {
+    public ResponseEntity<Object> registerUser(@Valid @RequestBody SignupRequest request,
+                                               BindingResult bindingResult) {
         final ResponseEntity<Object> errors = responseErrorValidator.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
         userService.createUser(request);
@@ -60,16 +60,11 @@ public class AuthController {
         ResponseEntity<Object> errors = responseErrorValidator.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
 
-        User user = userService.getUserByEmail(request.getUsername());
-
-        if (user.isEnabled()) {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    request.getUsername(), request.getPassword()
-            ));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication);
-            return ResponseEntity.ok(new JwtTokenSuccessResponse(true, jwt));
-        }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Account not activated");
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                request.getUsername(), request.getPassword()
+        ));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication);
+        return ResponseEntity.ok(new JwtTokenSuccessResponse(true, jwt));
     }
 }
