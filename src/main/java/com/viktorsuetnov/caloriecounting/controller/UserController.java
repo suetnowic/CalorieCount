@@ -22,14 +22,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    private final UserFacade userFacade;
+
+    private final ResponseErrorValidator responseErrorValidator;
 
     @Autowired
-    private UserFacade userFacade;
-
-    @Autowired
-    private ResponseErrorValidator responseErrorValidator;
+    public UserController(UserService userService, UserFacade userFacade, ResponseErrorValidator responseErrorValidator) {
+        this.userService = userService;
+        this.userFacade = userFacade;
+        this.responseErrorValidator = responseErrorValidator;
+    }
 
     @GetMapping("/")
     public ResponseEntity<UserDTO> getCurrentUser(Principal principal) {
@@ -54,7 +58,7 @@ public class UserController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/")
     public ResponseEntity<Object> updateUser(@Valid @RequestBody User userIn,
                                              BindingResult bindingResult,
                                              Principal principal) {
