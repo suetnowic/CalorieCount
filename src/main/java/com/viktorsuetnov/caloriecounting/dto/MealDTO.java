@@ -25,20 +25,40 @@ public class MealDTO {
         this.excess = excess;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public Integer getCalories() {
+        return calories;
+    }
+
     public void setCalories(Integer calories) {
         this.calories = calories;
+    }
+
+    public Boolean getExcess() {
+        return excess;
     }
 
     public void setExcess(Boolean excess) {
