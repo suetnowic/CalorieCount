@@ -1,5 +1,6 @@
 package com.viktorsuetnov.caloriecounting.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,11 +12,13 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.*;
 
+@Schema(description = "Сущность пользователя")
 @Data
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
@@ -24,6 +27,7 @@ public class User implements UserDetails {
     @Size(min = 5, max = 100)
     @Column(name = "username", nullable = false, unique = true, updatable = false)
     private String username;
+
 
     @NotBlank
     @Email
@@ -35,14 +39,20 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "activation_code")
     private String activationCode;
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "registered", updatable = false, columnDefinition = "timestamp default now()")
     private LocalDate registered;
+
+    @Column(name = "calories_per_day")
+    private Integer caloriesPerDay;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))

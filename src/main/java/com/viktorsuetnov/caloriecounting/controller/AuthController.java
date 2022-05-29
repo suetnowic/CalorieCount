@@ -8,6 +8,8 @@ import com.viktorsuetnov.caloriecounting.payload.response.MessageResponse;
 import com.viktorsuetnov.caloriecounting.security.jwt.JwtTokenProvider;
 import com.viktorsuetnov.caloriecounting.service.UserService;
 import com.viktorsuetnov.caloriecounting.validations.ResponseErrorValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ import static com.viktorsuetnov.caloriecounting.security.SecurityConstants.TOKEN
 @RestController
 @RequestMapping("/api/v1/auth")
 @PreAuthorize("permitAll()")
+@Tag(name = "Контролер авторизации", description = "Позволяет создать и войти в аккаунт")
 public class AuthController {
 
     private final ResponseErrorValidator responseErrorValidator;
@@ -45,6 +48,7 @@ public class AuthController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @Operation(summary = "Регистрация пользователя")
     @PostMapping("/signup")
     public ResponseEntity<Object> registerUser(@Valid @RequestBody SignupRequest request,
                                                BindingResult bindingResult) {
@@ -54,6 +58,7 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User registered successfully"));
     }
 
+    @Operation(summary = "Аутентификация пользователя")
     @PostMapping("/signin")
     public ResponseEntity<Object> authenticateUser(@Valid @RequestBody LoginRequest request,
                                                    BindingResult bindingResult) {
