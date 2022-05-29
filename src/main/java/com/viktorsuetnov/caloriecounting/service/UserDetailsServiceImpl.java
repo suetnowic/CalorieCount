@@ -25,28 +25,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getUserByEmail(username);
-        if (user != null && user.isEnabled()) {
-            List<GrantedAuthority> authorities = getUserAuthority(user);
-            return build(user, authorities);
-        } else {
-            throw new UsernameNotFoundException("User with " + username + " not found");
-        }
+        User user = userRepository.getUserByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with " + username + " not found"));
+        return build(user);
     }
 
     public User loadUserById(Long id) {
         return userRepository.getUserById(id).orElse(null);
     }
 
-    private List<GrantedAuthority> getUserAuthority(User user) {
-        return user
-                .getRoles()
+    private static User build(User user) {
+        List<GrantedAuthority> authorities = user.
+                getRoles()
                 .stream()
-                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .map(eRole -> new SimpleGrantedAuthority(eRole.name()))
                 .collect(Collectors.toList());
-    }
-
-    private static User build(User user, List<GrantedAuthority> authorities) {
-        return new User(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
+        return new User(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                authorities);
     }
 }

@@ -22,6 +22,8 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final Integer DEFAULT_CALORIES_PER_DAY = 2000;
+
     public static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
@@ -45,6 +47,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userIn.getUsername());
         user.setActivationCode(UUID.randomUUID().toString());
         user.setPassword(bCryptPasswordEncoder.encode(userIn.getPassword()));
+        user.setCaloriesPerDay(userIn.getCaloriesPerDay() == null ? DEFAULT_CALORIES_PER_DAY : userIn.getCaloriesPerDay());
         user.getRoles().add(Role.ROLE_USER);
         try {
             LOG.info("Saving user with {}", userIn.getEmail());
@@ -76,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long id) {
-        return userRepository.getUserById(id).orElse(null);
+        return userRepository.getUserById(id).orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 
     @Override
@@ -136,7 +139,7 @@ public class UserServiceImpl implements UserService {
 
     private boolean changePassword(String newPassword, User user) {
         if (StringUtils.hasText(newPassword)) {
-            LOG.info("Update password... {}", user.getUsername());
+            LOG.info("Update password for user {}...", user.getUsername());
             user.setPassword(bCryptPasswordEncoder.encode(newPassword));
             return true;
         }
@@ -146,6 +149,6 @@ public class UserServiceImpl implements UserService {
     private User getUserFromPrincipal(Principal principal) {
         String username = principal.getName();
         return userRepository.getUserByUsername(username).orElseThrow(() ->
-                new UsernameNotFoundException("Username with username " + username + " not found "));
+                new UsernameNotFoundException("Username with username " + username + " not found"));
     }
 }
