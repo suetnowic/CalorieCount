@@ -30,7 +30,6 @@ public class Meal {
 
     @NotNull
     @Column(name = "calories", nullable = false)
-    @Range(min = 5, max = 5000)
     private Integer calories;
 
     @NotNull
@@ -51,6 +50,14 @@ public class Meal {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDateTime getDateTime() {
