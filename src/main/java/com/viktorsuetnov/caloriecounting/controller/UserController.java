@@ -1,7 +1,7 @@
 package com.viktorsuetnov.caloriecounting.controller;
 
 import com.viktorsuetnov.caloriecounting.dto.UserDTO;
-import com.viktorsuetnov.caloriecounting.facade.UserFacade;
+import com.viktorsuetnov.caloriecounting.mapper.UserMapper;
 import com.viktorsuetnov.caloriecounting.model.User;
 import com.viktorsuetnov.caloriecounting.payload.response.MessageResponse;
 import com.viktorsuetnov.caloriecounting.service.UserService;
@@ -27,13 +27,12 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final UserFacade userFacade;
     private final ResponseErrorValidator responseErrorValidator;
 
     @Autowired
-    public UserController(UserService userService, UserFacade userFacade, ResponseErrorValidator responseErrorValidator) {
+    public UserController(UserService userService, ResponseErrorValidator responseErrorValidator) {
         this.userService = userService;
-        this.userFacade = userFacade;
+
         this.responseErrorValidator = responseErrorValidator;
     }
 
@@ -41,7 +40,7 @@ public class UserController {
     @GetMapping("/")
     public ResponseEntity<UserDTO> getCurrentUser(Principal principal) {
         User user = userService.getCurrentUser(principal);
-        UserDTO userDTO = userFacade.userToUserDTO(user);
+        UserDTO userDTO = UserMapper.INSTANCE.toDTO(user);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
@@ -50,7 +49,7 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         List<UserDTO> userDTOs = users.stream()
-                .map(user -> userFacade.userToUserDTO(user))
+                .map(user -> UserMapper.INSTANCE.toDTO(user))
                 .collect(Collectors.toList());
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
@@ -59,7 +58,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTO> getUserProfile(Principal principal, @PathVariable("userId") String userId) {
         User user = userService.getUserById(Long.parseLong(userId));
-        UserDTO userDTO = userFacade.userToUserDTO(user);
+        UserDTO userDTO = UserMapper.INSTANCE.toDTO(user);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
@@ -71,7 +70,7 @@ public class UserController {
         ResponseEntity<Object> errors = responseErrorValidator.mapValidationService(bindingResult);
         if (!ObjectUtils.isEmpty(errors)) return errors;
         User user = userService.updateProfile(userIn, principal);
-        UserDTO userDTO = userFacade.userToUserDTO(user);
+        UserDTO userDTO = UserMapper.INSTANCE.toDTO(user);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 

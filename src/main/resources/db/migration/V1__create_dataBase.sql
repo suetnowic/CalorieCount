@@ -7,6 +7,7 @@ CREATE TABLE users
     active           BOOLEAN                 NOT NULL,
     activation_code  VARCHAR(255),
     registered       TIMESTAMP DEFAULT NOW() NOT NULL,
+    calories_per_day integer DEFAULT 2000,
     PRIMARY KEY (id)
 );
 
