@@ -77,4 +77,15 @@ class UserServiceTest {
         Mockito.when(userRepository.getUserByEmail("dummy@mail.io")).thenThrow(new UserNotFoundException("User with email = dummy@mail.io not found"));
         Assertions.assertThrows(UserNotFoundException.class, () -> userService.getUserByEmail("dummy@mail.io"));
     }
+
+    @Test
+    public void activateUser() {
+        User user = new User();
+        user.setActivationCode("activate");
+        Mockito.when(userRepository.getUserByActivationCode("activate")).thenReturn(Optional.of(user));
+        boolean isActivate = userService.activateUser("activate");
+        Assertions.assertTrue(isActivate);
+        Assertions.assertNull(user.getActivationCode());
+        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+    }
 }
