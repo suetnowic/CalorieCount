@@ -2,6 +2,7 @@ package com.viktorsuetnov.caloriecounting.payload.request;
 
 import com.viktorsuetnov.caloriecounting.annotations.PasswordMatches;
 import com.viktorsuetnov.caloriecounting.annotations.ValidEmail;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+@Builder
 @Data
 @PasswordMatches
 public class SignupRequest {
