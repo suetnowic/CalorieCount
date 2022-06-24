@@ -5,8 +5,8 @@ import com.viktorsuetnov.caloriecounting.model.Role;
 import com.viktorsuetnov.caloriecounting.model.User;
 import com.viktorsuetnov.caloriecounting.repository.UserRepository;
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+    @Spy
     @InjectMocks
     private UserServiceImpl userService;
     @Spy
@@ -35,13 +37,13 @@ class UserServiceTest {
     @Mock
     private MailSender mailSender;
 
-    @BeforeEach
+    @Before
     public void init() {
         bCryptPasswordEncoder = new BCryptPasswordEncoder();
     }
 
     @Test
-    public void createUser() {
+    public void verifyCreateUserVerifyAssigningActivationCodeAndRoleVerifyCallSave() {
         Mockito.doNothing().when(mailSender).send(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString());
@@ -52,7 +54,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void getAllUsers() {
+    public void WhenGetAllUsersThenMustBeNotNull() {
         Mockito.when(userRepository.findAll()).thenReturn(USERS);
         List<User> found = userService.getAllUsers();
         assertThat(found.size()).isGreaterThan(0);
@@ -61,7 +63,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void getUserById() {
+    public void WhenGetUserByIdThenReturnedUser() {
         Mockito.when(userRepository.getUserById(1L)).thenReturn(Optional.of(USERS.get(0)));
         Assertions.assertEquals(userService.getUserById(1L), USERS.get(0));
         Assertions.assertDoesNotThrow(() -> new UserNotFoundException("User not found"));
@@ -70,7 +72,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void getUserByEmail() {
+    public void WhenGetUserByEmailThenReturnedUser() {
         Mockito.when(userRepository.getUserByEmail("user1@mail.io")).thenReturn(Optional.of(USERS.get(0)));
         Assertions.assertEquals(userService.getUserByEmail("user1@mail.io"), USERS.get(0));
         Assertions.assertDoesNotThrow(() -> new UserNotFoundException("User not found"));
@@ -79,7 +81,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void activateUser() {
+    public void WhenActivateUserThenUserMustBeActivated() {
         User user = new User();
         user.setActivationCode("activate");
         Mockito.when(userRepository.getUserByActivationCode("activate")).thenReturn(Optional.of(user));
