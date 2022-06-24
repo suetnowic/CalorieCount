@@ -1,11 +1,12 @@
 package com.viktorsuetnov.caloriecounting.repository;
 
+import com.viktorsuetnov.caloriecounting.dto.MealDTO;
 import com.viktorsuetnov.caloriecounting.model.Meal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,5 +24,5 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
             "AND m.dateTime >= :startDate " +
             "AND m.dateTime <= :endDate " +
             "ORDER BY m.dateTime DESC")
-    Optional<List<Meal>> getBetween(LocalDate startDate, LocalDate endDate, long userId);
+    Optional<List<Meal>> getBetween(LocalDateTime startDate, LocalDateTime endDate, long userId);
 }
