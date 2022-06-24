@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface MealService {
@@ -22,9 +24,6 @@ public interface MealService {
 
     boolean delete(Long id, Principal principal);
 
-    List<Meal> getBetweenDates(LocalDate startDate, LocalDate endDate, long userId);
-
-    List<MealDTO> getBetweenDatesAndTimes(LocalDate startDate, LocalTime startTime,
-                                       LocalDate endDate, LocalTime endTime, Long userId);
+    Optional<List<Meal>> getBetweenDates(LocalDate startDate, LocalDate endDate, long userId);
 
 }
