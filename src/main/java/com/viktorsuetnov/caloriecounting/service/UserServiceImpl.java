@@ -149,6 +149,6 @@ public class UserServiceImpl implements UserService {
     private User getUserFromPrincipal(Principal principal) {
         String username = principal.getName();
         return userRepository.getUserByUsername(username).orElseThrow(() ->
-                new UsernameNotFoundException("Username with username " + username + " not found"));
+                new UsernameNotFoundException("Username with " + username + " not found"));
     }
 }
