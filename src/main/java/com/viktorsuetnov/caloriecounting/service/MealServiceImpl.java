@@ -1,6 +1,5 @@
 package com.viktorsuetnov.caloriecounting.service;
 
-import com.viktorsuetnov.caloriecounting.dto.MealDTO;
 import com.viktorsuetnov.caloriecounting.exception.MealNotFoundException;
 import com.viktorsuetnov.caloriecounting.exception.UserNotFoundException;
 import com.viktorsuetnov.caloriecounting.model.Meal;
@@ -14,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MealServiceImpl implements MealService {
@@ -77,13 +78,12 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<Meal> getBetweenDates(LocalDate startDate, LocalDate endDate, long userId) {
-        return null;
+    public Optional<List<Meal>> getBetweenDates(LocalDate startDate, LocalDate endDate, long userId) {
+        return getBetweenDatesAndTimes(LocalDateTime.of(startDate, LocalTime.MIN), LocalDateTime.of(endDate, LocalTime.MAX), userId);
     }
 
-    @Override
-    public List<MealDTO> getBetweenDatesAndTimes(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, Long userId) {
-        return null;
+    private Optional<List<Meal>> getBetweenDatesAndTimes(LocalDateTime startDateTime, LocalDateTime endDateTime, long userId) {
+        return mealRepository.getBetween(startDateTime, endDateTime, userId);
     }
 
     private boolean isEquals(Meal meal, User user) {
